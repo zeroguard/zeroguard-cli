@@ -10,7 +10,6 @@ CLI Structure
 * `-L --log` - Enable logging
 * `-S --log-stdout` - Send log messages to STDOUT instead of STDERR if logging
   is enabled.
-* `-C --no-config` - Ignore configuration file even if it exists
 * `-h --help` - Print help message and exit
 * `-q --quiet` - Do not output any informational messages
 * `-v -V --version` - Print ZG CLI version and exit
@@ -34,11 +33,6 @@ CLI Structure
   - `tree` - Format similar to output of `tree` \*nix command
   - `verbose, verb` - Human friendly plain text output format
   - `yaml`
-* `-c --config <PATH> [default: ~/.config/zg/config]` - Path to ZG
-  configuration file. Specify `-` as a path to read from STDIN.
-* `-i --identity <PATH> [default: ~/.config/zg/identity]` - Path to ZG identity
-  file (file where authentication token is stored after initial `zg login`).
-  Specify `-` as a path to read from STDIN.
 
 ### `zg status` | Status Command
 Output ZeroGuard systems status and health information
