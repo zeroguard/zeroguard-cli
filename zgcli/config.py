@@ -5,12 +5,12 @@ from box import Box
 DEFAULTS = {
     'display': {
         'max_content_width': 120,
-        'format': 'verbose',
-        'acceptable_formats': [
+        'output_format': 'text',
+        'acceptable_output_formats': [
             'csv',
             'json',
             'tree',
-            'verbose',
+            'text',
             'yaml'
         ]
     },

@@ -13,12 +13,9 @@ CONTEXT_SETTINGS = {
 }
 
 
-OPT_FORMAT_KWARGS = {
-    'help': 'Data output format.',
-    'default': DEFAULT_CONFIG.display.format,
-    'metavar': 'FORMAT',
-    'show_default': True,
-    'type': click.Choice(DEFAULT_CONFIG.display.acceptable_formats)
+OPT_API_TOKEN_KWARGS = {
+    'help': 'API token to use for authentication.',
+    'metavar': 'TOKEN'
 }
 
 
@@ -54,6 +51,15 @@ OPT_LOG_STDOUT_KWARGS = {
 }
 
 
+OPT_OUTPUT_FORMAT_KWARGS = {
+    'help': 'Data output format.',
+    'default': DEFAULT_CONFIG.display.output_format,
+    'metavar': 'FORMAT',
+    'show_default': True,
+    'type': click.Choice(DEFAULT_CONFIG.display.acceptable_output_formats)
+}
+
+
 OPT_QUIET_KWARGS = {
     'help': 'Suppress application informational messages.',
     'default': False,
@@ -69,11 +75,12 @@ OPT_VERSION_KWARGS = {
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, invoke_without_command=True)
-@click.option('-f', '--format', **OPT_FORMAT_KWARGS)
+@click.option('-t', '--api-token', **OPT_API_TOKEN_KWARGS)
 @click.option('-L', '--log', **OPT_LOG_KWARGS)
 @click.option('-F', '--log-format', **OPT_LOG_FORMAT_KWARGS)
 @click.option('-l', '--log-level', **OPT_LOG_LEVEL_KWARGS)
 @click.option('-S', '--log-stdout', **OPT_LOG_STDOUT_KWARGS)
+@click.option('-f', '--output-format', **OPT_OUTPUT_FORMAT_KWARGS)
 @click.option('-q', '--quiet', **OPT_QUIET_KWARGS)
 @click.option('-v', '-V', '--version', **OPT_VERSION_KWARGS)
 @click.pass_context

@@ -2,17 +2,16 @@
 """ZeroGuard CLI package build script."""
 import json
 import os
-import setuptools
+from setuptools import setup, find_packages
 
 import zgcli
 
 
-PACKAGE_NAME = 'zgcli'
 LOCK_FILE = 'Pipfile.lock'
 README_FILE = 'README.md'
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-ABOUT_FILE = os.path.join(BASE_DIR, PACKAGE_NAME, '__version__.py')
+ABOUT_FILE = os.path.join(BASE_DIR, 'zgcli', '__version__.py')
 
 
 def parse_requirements(lock_fpath):
@@ -26,7 +25,8 @@ def parse_requirements(lock_fpath):
 
     return (
         ['%s%s' % (k, v['version']) for k, v in lock_deps['default'].items()],
-        ['%s%s' % (k, v['version']) for k, v in lock_deps['develop'].items()])
+        ['%s%s' % (k, v['version']) for k, v in lock_deps['develop'].items()]
+    )
 
 
 def main():
@@ -39,7 +39,7 @@ def main():
     requirements, test_requirements = parse_requirements(LOCK_FILE)
 
     # Setup the package
-    setuptools.setup(
+    setup(
         name=zgcli.__title__,
         version=zgcli.__version__,
         license=zgcli.__license__,
@@ -52,7 +52,7 @@ def main():
         author_email=zgcli.__author_email__,
         url=zgcli.__home_url__,
 
-        packages=[PACKAGE_NAME],
+        packages=find_packages(),
         package_data={'': ['CHANGELOG.md', 'LICENSE']},
         entry_points={'console_scripts': ['zg=zgcli.main:main']},
 
