@@ -5,10 +5,17 @@ ZeroGuard CLI
 
 CLI Structure
 -------------
-### Root Command Options
-* `--log | --no-log [default: --no-log]` - Enable or disable logging
-* `--log-stdout | --log-stderr [default: --log-stderr]` - Stream to which log
-  messages will be sent (if logging is enabled).
+### `zg` | Root Command Options
+#### Flags
+* `-L --log` - Enable logging
+* `-S --log-stdout` - Send log messages to STDOUT instead of STDERR if logging
+  is enabled.
+* `-C --no-config` - Ignore configuration file even if it exists
+* `-h --help` - Print help message and exit
+* `-q --quiet` - Do not output any informational messages
+* `-v -V --version` - Print ZG CLI version and exit
+
+#### Options With Arguments
 * `-l --log-level <LEVEL> [default: warning]` - Logging level
   - `debug, dbg`
   - `info, inf`
@@ -29,18 +36,12 @@ CLI Structure
   - `yaml`
 * `-c --config <PATH> [default: ~/.config/zg/config]` - Path to ZG
   configuration file. Specify `-` as a path to read from STDIN.
-* `--no-config` - Ignore configuration file even if it exists
 * `-i --identity <PATH> [default: ~/.config/zg/identity]` - Path to ZG identity
   file (file where authentication token is stored after initial `zg login`).
   Specify `-` as a path to read from STDIN.
-* `-h --help` - Print help message and exit
-* `-v -V --version` - Print ZG CLI version and exit
 
-### Help Command
-`zg help` is an alias of `zg -h`
-
-### Version Command
-`zg version` is an alias of `zg -v`
+### `zg status` | Status Command
+Output ZeroGuard systems status and health information
 
 Conventions & Resources
 -----------------------
