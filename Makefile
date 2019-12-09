@@ -7,6 +7,7 @@ ENV_FILE=.env
 ###############################################################################
 # Configurable constants block
 ###############################################################################
+BINARY_NAME := zg
 PACKAGE_NAME := zeroguard_cli
 PIPENV_CMD_RUN := pipenv run
 
@@ -22,17 +23,23 @@ init:
 	pip3 install pipenv --upgrade
 	pipenv install --dev
 
-.PHONY: test
-test:
-	$(PIPENV_CMD_RUN) python3 -m pytest
-
 .PHONY: docs
 docs:
 	$(SPHINX_CMD_BUILD) $(SPHINX_SOURCE_DIR) $(SPHINX_BUILD_DIR)
+
+.PHONY: binary
+binary:
+	pip3 install 'PyInstaller>=3.5.0'
+	pyinstaller --onefile ./zgcli/main.py -n $(BINARY_NAME)
+	rm -r build/ $(BINARY_NAME).spec
 
 .PHONY: pypi
 pypi:
 	pip3 install 'twine>=1.5.0'
 	python3 setup.py sdist bdist_wheel
 	twine upload dist/* || :
-	rm -rf build/ dist/ .egg $(PACKAGE_NAME).egg-info
+	rm -r build/ dist/ .egg $(PACKAGE_NAME).egg-info
+
+.PHONY: test
+test:
+	$(PIPENV_CMD_RUN) python3 -m pytest
