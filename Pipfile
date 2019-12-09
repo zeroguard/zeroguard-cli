@@ -11,5 +11,5 @@ sphinx = "*"
 
 [packages]
 click = "*"
-python-gox = "*"
+python-box = "*"
 pyyaml = "*"

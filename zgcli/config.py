@@ -41,13 +41,9 @@ DEFAULTS = {
         'log_level': 'info',
         'acceptable_log_levels': [
             'debug',
-            'dbg',
             'info',
-            'inf',
             'warning',
-            'warn',
-            'critical',
-            'crit'
+            'critical'
         ],
     }
 }
