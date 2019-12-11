@@ -3,8 +3,9 @@ import sys
 
 import click
 
-from zgcli import __description__, __version__, DEFAULT_CONFIG
+from zgcli import __description__, __version__
 from zgcli.commands import ENABLED_COMMANDS
+from zgcli.config import DEFAULT_CONFIG
 
 
 CONTEXT_SETTINGS = {

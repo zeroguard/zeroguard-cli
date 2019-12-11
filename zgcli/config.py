@@ -41,3 +41,7 @@ class Config(Box):
     def create_from_defaults():
         """."""
         return Config(DEFAULTS)
+
+
+# Create a singletone default configuration instance
+DEFAULT_CONFIG = Config.create_from_defaults()
