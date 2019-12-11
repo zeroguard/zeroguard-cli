@@ -8,4 +8,10 @@ ZeroGuard CLI
 ![Repository License](https://img.shields.io/github/license/zeroguard/zeroguard-cli)
 ![PyPI Python Version](https://img.shields.io/pypi/pyversions/zeroguard-cli)
 
-Coming soon
+> **NOTE**: This project is currently under active development. Nothing works as
+> of right now but that may change any day. Start, watch and check it out
+> later.
+
+This is an official CLI application for interacting with
+[ZeroGuard Recon](https://zeroguard.com/platform/recon-threat-intelligence)
+threat intelligence platform.
