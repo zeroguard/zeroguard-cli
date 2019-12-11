@@ -97,14 +97,23 @@ def cli(ctx, **options):
         sys.exit(0)
 
 
-def main():
-    """Run ZeroGuard CLI."""
+def create_cli(nowrap=False):
+    """Prepare CLI application object for usage.
+
+    :param nowrap: Do not wrap CLI into a lambda function which passes context
+                   objext. This parameters is mostly needed for testing.
+    :type nowrap:  bool
+
+    :return: CLI instance ready to be run
+    :rtype:  func
+    """
     for command in ENABLED_COMMANDS:
         cli.add_command(command)
 
     # pylint: disable=E1120,E1123
-    return cli(obj={})
+    return cli if nowrap else lambda: cli(obj={})
 
 
+# Run ZeroGuard CLI application if called directly
 if __name__ == '__main__':
-    main()
+    create_cli()()
