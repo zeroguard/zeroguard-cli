@@ -30,6 +30,10 @@ DEFAULTS = {
             'warning',
             'critical'
         ],
+    },
+
+    'upstream': {
+        'api_endpoint': 'https://api.zeroguard.com'
     }
 }
 

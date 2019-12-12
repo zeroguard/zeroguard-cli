@@ -9,7 +9,7 @@ ZeroGuard CLI
 ![PyPI Python Version](https://img.shields.io/pypi/pyversions/zeroguard-cli)
 
 > **NOTE**: This project is currently under active development. Nothing works as
-> of right now but that may change any day. Start, watch and check it out
+> of right now but that may change any day. Star, watch and check it out
 > later.
 
 This is an official CLI application for interacting with

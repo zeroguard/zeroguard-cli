@@ -6,6 +6,7 @@ import click
 from zgcli import __description__, __version__
 from zgcli.commands import ENABLED_COMMANDS
 from zgcli.config import DEFAULT_CONFIG
+import zgcli.validators as validators
 
 
 CONTEXT_SETTINGS = {
@@ -17,6 +18,15 @@ CONTEXT_SETTINGS = {
 OPT_API_TOKEN_KWARGS = {
     'help': 'API token to use for authentication.',
     'metavar': 'TOKEN'
+}
+
+
+OPT_API_ENDPOINT_KWARGS = {
+    'help': 'API endpoint to communicate with.',
+    'callback': validators.check_valid_netloc_click,
+    'default': DEFAULT_CONFIG.upstream.api_endpoint,
+    'metavar': 'ENDPOINT',
+    'show_default': True
 }
 
 
@@ -76,6 +86,7 @@ OPT_VERSION_KWARGS = {
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, invoke_without_command=True)
+@click.option('-e', '--api-endpoint', **OPT_API_ENDPOINT_KWARGS)
 @click.option('-t', '--api-token', **OPT_API_TOKEN_KWARGS)
 @click.option('-L', '--log', **OPT_LOG_KWARGS)
 @click.option('-F', '--log-format', **OPT_LOG_FORMAT_KWARGS)
@@ -86,7 +97,7 @@ OPT_VERSION_KWARGS = {
 @click.option('-v', '-V', '--version', **OPT_VERSION_KWARGS)
 @click.pass_context
 def cli(ctx, **options):
-    """."""
+    """Official ZeroGuard Recon threat intelligence platform CLI client."""
     # Print CLI version if requested
     if options['version']:
         click.echo('%s version %s' % (__description__, __version__))

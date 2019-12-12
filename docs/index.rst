@@ -1,3 +1,2 @@
 ZeroGuard CLI
 =============
-Coming soon
