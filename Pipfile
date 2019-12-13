@@ -10,6 +10,7 @@ python-coveralls = "*"
 sphinx = "*"
 
 [packages]
+blessings = "*"
 click = "*"
+colorama = "*"
 python-box = "*"
-pyyaml = "*"
