@@ -7,4 +7,4 @@
 #              should not be a way to get zg running on user's host.
 # Usage:       invoke.sh ZG_CLI_OPTIONS_HERE
 set -euo pipefail
-python3 -m zgcli.main "$@"
+pipenv run python3 -m zgcli.main "$@"
