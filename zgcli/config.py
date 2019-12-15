@@ -4,15 +4,21 @@ from box import Box
 
 DEFAULTS = {
     'display': {
-        'max_content_width': 120,
         'output_format': 'text',
         'acceptable_output_formats': [
             'csv',
             'json',
-            'tree',
             'text',
+            'tree',
             'yaml'
-        ]
+        ],
+
+        # Whether to colorize CLI output. Force coloring means that output will
+        # be colored even if redirected and/or piped by a user.
+        'force_colored': False,
+        'colored': True,
+
+        'max_content_width': 120,
     },
 
     'logging': {
@@ -32,8 +38,29 @@ DEFAULTS = {
         ],
     },
 
-    'upstream': {
-        'api_endpoint': 'https://api.zeroguard.com'
+    'api': {
+        'endpoint': 'api.zeroguard.com',
+
+        # FIXME: All view-related schemas should be moved somewhere else down
+        # the road. Probably as soon as we get SDK implemented.
+        'data_groups': [
+            'dns',
+            'har',
+            'ports',
+            'ssl',
+            'track'
+            'whois'
+        ],
+
+        'per_group_views': [
+            'all',
+            'summary'
+        ],
+
+        'compound_views': [
+            'all',
+            'summary'
+        ]
     }
 }
 

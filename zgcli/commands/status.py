@@ -1,4 +1,4 @@
-"""."""
+"""ZeroGuard platform availability/status check command."""
 import click
 
 

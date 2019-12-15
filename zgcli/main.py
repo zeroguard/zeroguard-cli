@@ -21,10 +21,18 @@ OPT_API_TOKEN_KWARGS = {
 }
 
 
+OPT_FORCE_COLOR_KWARGS = {
+    'help':
+        'Force usage of ANSI color escape codes even if output is redirected.',
+    'default': DEFAULT_CONFIG.display.force_colored,
+    'is_flag': True
+}
+
+
 OPT_API_ENDPOINT_KWARGS = {
     'help': 'API endpoint to communicate with.',
     'callback': validators.check_valid_netloc_click,
-    'default': DEFAULT_CONFIG.upstream.api_endpoint,
+    'default': DEFAULT_CONFIG.api.endpoint,
     'metavar': 'ENDPOINT',
     'show_default': True
 }
@@ -62,6 +70,13 @@ OPT_LOG_STDOUT_KWARGS = {
 }
 
 
+OPT_NO_COLOR_KWARGS = {
+    'help': 'Disable ANSI color escape codes in the output.',
+    'default': DEFAULT_CONFIG.display.colored,
+    'is_flag': True
+}
+
+
 OPT_OUTPUT_FORMAT_KWARGS = {
     'help': 'Data output format.',
     'default': DEFAULT_CONFIG.display.output_format,
@@ -88,10 +103,12 @@ OPT_VERSION_KWARGS = {
 @click.group(context_settings=CONTEXT_SETTINGS, invoke_without_command=True)
 @click.option('-e', '--api-endpoint', **OPT_API_ENDPOINT_KWARGS)
 @click.option('-t', '--api-token', **OPT_API_TOKEN_KWARGS)
+@click.option('-c', '--force-color', **OPT_FORCE_COLOR_KWARGS)
 @click.option('-L', '--log', **OPT_LOG_KWARGS)
 @click.option('-F', '--log-format', **OPT_LOG_FORMAT_KWARGS)
 @click.option('-l', '--log-level', **OPT_LOG_LEVEL_KWARGS)
 @click.option('-S', '--log-stdout', **OPT_LOG_STDOUT_KWARGS)
+@click.option('-C', '--no-color', **OPT_NO_COLOR_KWARGS)
 @click.option('-f', '--output-format', **OPT_OUTPUT_FORMAT_KWARGS)
 @click.option('-q', '--quiet', **OPT_QUIET_KWARGS)
 @click.option('-v', '-V', '--version', **OPT_VERSION_KWARGS)
