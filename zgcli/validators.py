@@ -18,6 +18,8 @@ def check_valid_netloc_click(_, __, value):
     if not valid_netlock:
         raise BadParameter('API endpoint specified is not valid.')
 
+    return value
+
 
 def check_valid_netloc(string):
     """Check whether given string represents a valid network location.
