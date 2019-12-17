@@ -1,14 +1,49 @@
 """Output formatter module."""
+# from __future__ import print_function
 from contextlib import contextmanager
+from functools import wraps
 import logging
-
+import sys
 # TODO: These libraries should provide low level building blocks for this
 # module. Feel free to add other dependencies if required but please make sure
 # we avoid adding a lot of "convenience" libraries if that can be easily
 # implemented with what we already have in place.
 import blessings
 import colorama
-import jinja2
+from jinja2 import Template
+
+def insert_log_level(dict, level, func_name):
+    """Insert log level to the dict"""
+    if dict.get(level) is not None:
+        dict[level].add(func_name)
+    else:
+        dict[level] = set([func_name])
+
+def register_log_level(log_level='ALL'):
+    """Register a function to the log level"""
+    def decorator_register_log_level(func):
+        @wraps(func)
+        def wrapped_func(*args, **kwargs):
+            if not wrapped_func.registered:
+                if isinstance(log_level, list):
+                    for level in log_level:
+                        insert_log_level(Formatter.LOG_LEVEL_DICT, level, func.__name__)
+                elif isinstance(log_level, str):
+                    insert_log_level(Formatter.LOG_LEVEL_DICT, log_level, func.__name__)
+                Formatter.LOG_LEVEL_DICT['ALL'].add(func.__name__)
+            wrapped_func.registered = True
+            return func(*args, **kwargs)
+        wrapped_func.registered = False
+        return wrapped_func
+    return decorator_register_log_level
+
+def with_log_level(func):
+    @wraps(func)
+    def wrapper_with_log_level(*args, **kwargs):
+        if (Formatter.LOG_LEVEL_DICT.get(Formatter.LOG_LEVEL) and
+            func.__name__ in Formatter.LOG_LEVEL_DICT[Formatter.LOG_LEVEL]):
+            return func(*args, **kwargs)
+    return wrapper_with_log_level
 
 
 # NOTE: Do we want to inherit from logger? In a perfect world we'd want to,
@@ -19,7 +54,7 @@ import jinja2
 # logs. We will still have an ability to enable logging from CLI, but that is
 # mostly for debugging how SDK and CLI work together. Logging and output
 # produced by formatter should be completely independent.
-class Formatter(logging.Logger):
+class Formatter():
     """."""
 
     # Features:
@@ -90,16 +125,16 @@ class Formatter(logging.Logger):
     # * TDD please
 
     DEFAULT_MSG_ERR_PREF = '---(X) ERR: '
-    DEFAULT_MSG_ERR_COLOR = ''  # Red
+    DEFAULT_MSG_ERR_COLOR = '{t.red}'  # Red
 
     DEFAULT_MSG_INFO_PREF = '---(i) INFO: '
-    DEFAULT_MSG_INFO_COLOR = ''  # White
+    DEFAULT_MSG_INFO_COLOR = '{t.white}'  # White
 
     DEFAULT_MSG_OK_PREF = '---(+) OK: '
-    DEFAULT_MSG_OK_COLOR = ''  # Green
+    DEFAULT_MSG_OK_COLOR = '{t.green}'  # Green
 
     DEFAULT_MSG_WARN_PREF = '---(!) WARN: '
-    DEFAULT_MSG_WARN_COLOR = ''  # Orange
+    DEFAULT_MSG_WARN_COLOR = '{t.yellow}'  # Orange
 
     DEFAULT_ITEMLIST_PREF = '* '
     DEFAULT_NUMLIST_PREF = '%i. '
@@ -111,7 +146,7 @@ class Formatter(logging.Logger):
     DEFAULT_INDENT_STEP = 2
 
     # NOTE: Allow to output all messages to STDOUT
-    DEFAULT_FD = ''  # STDERR
+    DEFAULT_FD = 'STDOUT'  # STDERR
 
     # NOTE: Output in color by default, unless output is redirected
     DEFAULT_COLORED = True
@@ -119,10 +154,17 @@ class Formatter(logging.Logger):
     # NOTE: Allow to force color even if redirected
     DEFAULT_FORCE_COLORED = False
 
+    DEFAULT_LOG_LEVEL = 'ALL'
+    LOG_LEVEL = DEFAULT_LOG_LEVEL
+    LOG_LEVEL_DICT = dict({ DEFAULT_LOG_LEVEL: set() })
+
 
     def __init__(self, **kwargs):
         """."""
+        self.t = blessings.Terminal()
 
+    @register_log_level('INFO')
+    @with_log_level
     def info(self, template, data=None):
         """."""
         # 1. Template can be literal string to output without any extra steps
@@ -134,24 +176,63 @@ class Formatter(logging.Logger):
         #
         # NOTE: We might need to specify which case it is explicitly as
         # detection may be junky/impossible/expensive.
+        self.fmt_print(self.infos(template, data))
+
 
     def infos(self, template, data=None):
         """Same as info() but do not print out and return as string."""
+        info_template = '{}{}{}'.format(
+            Formatter.DEFAULT_MSG_INFO_COLOR,
+            Formatter.DEFAULT_MSG_INFO_PREF,
+            template)+'{t.normal}'
+        return info_template.format(t=self.t)
 
+
+    @register_log_level('WARN')
+    @with_log_level
     def warn(self, template, data=None):
         """."""
+        self.fmt_print(self.warns(template, data))
 
     def warns(self,template, data=None):
         """."""
+        warn_template = '{}{}{}'.format(
+            Formatter.DEFAULT_MSG_WARN_COLOR,
+            Formatter.DEFAULT_MSG_WARN_PREF,
+            template)+'{t.normal}'
+        return warn_template.format(t=self.t)
 
+
+    @register_log_level(['ERR','WARN','INFO'])
+    @with_log_level
     def err(self, template, data=None):
         """."""
+        self.fmt_print(self.errs(template, data))
 
     def errs(self, template, data=None):
         """."""
+        err_template = '{}{}{}'.format(
+            Formatter.DEFAULT_MSG_ERR_COLOR,
+            Formatter.DEFAULT_MSG_ERR_PREF,
+            template)+'{t.normal}'
+        return err_template.format(t=self.t)
 
+
+    @register_log_level('OK')
+    @with_log_level
     def ok(self, template, data=None):
         """."""
+        self.fmt_print(self.oks(template, data))
+
+
+    def oks(self, template, data=None):
+        """."""
+        warn_template = '{}{}{}'.format(
+            Formatter.DEFAULT_MSG_OK_COLOR,
+            Formatter.DEFAULT_MSG_OK_PREF,
+            template)+'{t.normal}'
+        return warn_template.format(t=self.t)
+
 
     @contextmanager
     def itemlist(self, **kwargs):
@@ -162,3 +243,25 @@ class Formatter(logging.Logger):
         """."""
 
     # NOTE: And a lot of other methods ...
+
+
+    def fmt_print(self, *args, **kwargs):
+        """."""
+        output = sys.stderr
+        if Formatter.DEFAULT_FD == 'STDOUT':
+            output = sys.stdout
+        print(*args, file=output, **kwargs)
+
+
+if __name__ == '__main__':
+    print("formatter")
+    # Formatter.LOG_LEVEL = 'INFO'
+    fmt = Formatter()
+    fmt.info('msg info {t.blue}{t.underline} blue underline{t.normal}')
+    fmt.warn('msg warn {t.red}{t.bold}red bold{t.normal}')
+    fmt.err('msg err')
+    fmt.ok('msg ok')
+    Formatter.LOG_LEVEL = 'OK'
+    fmt.info('msg info')
+
+    print(Formatter.LOG_LEVEL_DICT)
