@@ -1,13 +1,13 @@
 """Output formatter module."""
-# pylint: disable=E0202
-import sys
-import re
 from contextlib import contextmanager
 from functools import wraps
+import re
+import sys
+
+import blessings
 from jinja2 import Template
 from box import Box
-import blessings
-import colorama
+import colorama  # FIXME: Initialize colorama
 
 
 def set_verbosity_level(verbosity_level):
@@ -67,33 +67,26 @@ class Formatter():
     """
 
     DEFAULT_MSG_ERR_PREF = '---(X) ERR: '
-    DEFAULT_MSG_ERR_COLOR = '{t.red}'  # Red
+    DEFAULT_MSG_ERR_COLOR = '{t.red}'
 
     DEFAULT_MSG_INFO_PREF = '---(i) INFO: '
-    DEFAULT_MSG_INFO_COLOR = '{t.white}'  # White
+    DEFAULT_MSG_INFO_COLOR = '{t.white}'
 
     DEFAULT_MSG_OK_PREF = '---(+) OK: '
-    DEFAULT_MSG_OK_COLOR = '{t.green}'  # Green
+    DEFAULT_MSG_OK_COLOR = '{t.green}'
 
     DEFAULT_MSG_WARN_PREF = '---(!) WARN: '
-    DEFAULT_MSG_WARN_COLOR = '{t.yellow}'  # Orange
+    DEFAULT_MSG_WARN_COLOR = '{t.yellow}'
 
     DEFAULT_ITEMLIST_PREF = '* '
     DEFAULT_NUMLIST_PREF = '%i. '
 
-    # NOTE: Preffer tabs over spaces for formatting. This will make it easier
-    # to cut and sed output of your CLI. See if you can make tab to look like 2
-    # spaces on CLI.
     DEFAULT_INDENT = 0
     DEFAULT_INDENT_STEP = 2
 
-    # NOTE: Allow to output all messages to STDOUT
-    DEFAULT_STDOUT = False  # STDERR
-
-    # NOTE: Output in color by default, unless output is redirected
+    # If set to False, will send messages to STDERR
+    DEFAULT_STDOUT = False
     DEFAULT_COLORED = True
-
-    # NOTE: Allow to force color even if redirected
     DEFAULT_FORCE_COLORED = False
 
     VERBOSITY_LEVELS = Box({
@@ -102,6 +95,7 @@ class Formatter():
         'WARN':   2,
         'ERR':    3
     })
+
     DEFAULT_VERBOSITY_LEVEL = VERBOSITY_LEVELS.INFO
     VERBOSITY_LEVEL = DEFAULT_VERBOSITY_LEVEL
     VERBOSITY_LEVEL_DICT = dict({DEFAULT_VERBOSITY_LEVEL: set()})
@@ -115,7 +109,8 @@ class Formatter():
             self,
             stdout=DEFAULT_STDOUT,
             colored=DEFAULT_COLORED,
-            force_colored=DEFAULT_FORCE_COLORED):
+            force_colored=DEFAULT_FORCE_COLORED
+    ):
         """Construct Formatter instance."""
         self._stdout = stdout
         self._colored = colored
@@ -208,7 +203,10 @@ class Formatter():
         info_template = '{}{}{}'.format(
             Formatter.DEFAULT_MSG_INFO_COLOR,
             Formatter.DEFAULT_MSG_INFO_PREF,
-            template)+'{t.normal}'
+            template
+        )
+        info_template += '{t.normal}'
+
         return self.fmt_to_string(info_template, data)
 
     @set_verbosity_level(VERBOSITY_LEVELS.WARN)
@@ -231,7 +229,10 @@ class Formatter():
         warn_template = '{}{}{}'.format(
             Formatter.DEFAULT_MSG_WARN_COLOR,
             Formatter.DEFAULT_MSG_WARN_PREF,
-            template)+'{t.normal}'
+            template
+        )
+        warn_template += '{t.normal}'
+
         return self.fmt_to_string(warn_template, data)
 
     @set_verbosity_level(VERBOSITY_LEVELS.ERR)
@@ -254,11 +255,14 @@ class Formatter():
         err_template = '{}{}{}'.format(
             Formatter.DEFAULT_MSG_ERR_COLOR,
             Formatter.DEFAULT_MSG_ERR_PREF,
-            template)+'{t.normal}'
+            template
+        )
+        err_template += '{t.normal}'
+
         return self.fmt_to_string(err_template, data)
 
     @set_verbosity_level(VERBOSITY_LEVELS.OK)
-    def ok(self, template, data=None):
+    def ok(self, template, data=None):  # pylint: disable=C0103
         """Print output of oks() method.
 
         Print output to the terminal when verbosity level is set to
@@ -277,7 +281,10 @@ class Formatter():
         ok_template = '{}{}{}'.format(
             Formatter.DEFAULT_MSG_OK_COLOR,
             Formatter.DEFAULT_MSG_OK_PREF,
-            template)+'{t.normal}'
+            template
+        )
+        ok_template += '{t.normal}'
+
         return self.fmt_to_string(ok_template, data)
 
     def data(self, template, data=None):
@@ -305,21 +312,20 @@ class Formatter():
 
         @wraps(fmt_to_string)
         def wrapped_fmt_to_string(*args, **kwargs):
-            return fmt_to_string(*args,
-                                 prefix=Formatter.DEFAULT_ITEMLIST_PREF,
-                                 **kwargs)
+            return fmt_to_string(
+                *args, prefix=Formatter.DEFAULT_ITEMLIST_PREF, **kwargs)
 
         @wraps(fmt_print)
-        def wrapper_fmt_print(*args, **kwargs):
+        def wrapped_fmt_print(*args, **kwargs):
             return fmt_print(*args, indent=indent, **kwargs)
 
-        self.fmt_to_string = wrapped_fmt_to_string
-        self.fmt_print = wrapper_fmt_print
+        setattr(self, 'fmt_to_string', wrapped_fmt_to_string)
+        setattr(self, 'fmt_print', wrapped_fmt_print)
 
         yield
 
-        self.fmt_to_string = fmt_to_string
-        self.fmt_print = fmt_print
+        setattr(self, 'fmt_to_string', fmt_to_string)
+        setattr(self, 'fmt_print', fmt_print)
 
     @contextmanager
     def numlist(self, indent=DEFAULT_INDENT):
@@ -342,24 +348,25 @@ class Formatter():
             wrapped_fmt_to_string.num_calls += 1
             prefix = Formatter.DEFAULT_NUMLIST_PREF % \
                 wrapped_fmt_to_string.num_calls
+
             return fmt_to_string(*args, prefix=prefix, **kwargs)
 
         wrapped_fmt_to_string.num_calls = 0
 
         @wraps(fmt_print)
-        def wrapper_fmt_print(*args, **kwargs):
+        def wrapped_fmt_print(*args, **kwargs):
             return fmt_print(*args, indent=indent, **kwargs)
 
-        self.fmt_to_string = wrapped_fmt_to_string
-        self.fmt_print = wrapper_fmt_print
+        setattr(self, 'fmt_to_string', wrapped_fmt_to_string)
+        setattr(self, 'fmt_print', wrapped_fmt_print)
 
         yield
 
-        self.fmt_to_string = fmt_to_string
-        self.fmt_print = fmt_print
+        setattr(self, 'fmt_to_string', fmt_to_string)
+        setattr(self, 'fmt_print', fmt_print)
 
     def fmt_print(self, *args, indent=DEFAULT_INDENT, **kwargs):
-        """Modyfied print() method.
+        """Format input data and print it out.
 
         Directs output to `sys.stderr` or `sys.stderr` according to the value
         of `self.stdout` property
@@ -371,10 +378,12 @@ class Formatter():
         output = sys.stderr
         if self.stdout:
             output = sys.stdout
+
         if indent > 0:
             indent = ' ' * indent * Formatter.DEFAULT_INDENT_STEP
             print(indent, *args, file=output, **kwargs)
             return
+
         print(*args, file=output, **kwargs)
 
     def fmt_to_string(self, template, data=None, prefix=None):
@@ -402,12 +411,15 @@ class Formatter():
         """
         if re.search(Formatter.JINJA_TEMPLATE_REGEX, template):
             template = Template(template).render(data)
+
         if self.colored:
             string = template.format(t=self._terminal)
         else:
             string = re.sub(Formatter.STRING_FORMATTING_REGEX, '', template)
+
         if prefix:
             string = '{}{}'.format(prefix, string)
+
         return string
 
 
