@@ -9,9 +9,13 @@ from zgcli.config import DEFAULT_CONFIG
 import zgcli.validators as validators
 
 
-CONTEXT_SETTINGS = {
-    'help_option_names': ['-h', '--help'],
-    'max_content_width': DEFAULT_CONFIG.display.max_content_width
+ROOT_CMD_SETTINGS = {
+    'context_settings': {
+        'help_option_names': ['-h', '--help'],
+        'max_content_width': DEFAULT_CONFIG.display.max_content_width
+    },
+    'invoke_without_command': True,
+    'epilog': None
 }
 
 
@@ -100,7 +104,7 @@ OPT_VERSION_KWARGS = {
 }
 
 
-@click.group(context_settings=CONTEXT_SETTINGS, invoke_without_command=True)
+@click.group(**ROOT_CMD_SETTINGS)
 @click.option('-e', '--api-endpoint', **OPT_API_ENDPOINT_KWARGS)
 @click.option('-t', '--api-token', **OPT_API_TOKEN_KWARGS)
 @click.option('-c', '--force-color', **OPT_FORCE_COLOR_KWARGS)

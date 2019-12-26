@@ -5,7 +5,7 @@ from box import Box
 DEFAULTS = {
     'display': {
         'output_format': 'text',
-        'acceptable_output_formats': [
+        'acceptable_output_formats': [  # FIXME: Read-only
             'csv',
             'json',
             'text',
@@ -23,14 +23,14 @@ DEFAULTS = {
 
     'logging': {
         'log_format': 'native',
-        'acceptable_log_formats': [
+        'acceptable_log_formats': [  # FIXME: Read-only
             'native',
             'jsonl',
             'syslog'
         ],
 
         'log_level': 'info',
-        'acceptable_log_levels': [
+        'acceptable_log_levels': [  # FIXME: Read-only
             'debug',
             'info',
             'warning',
@@ -43,6 +43,7 @@ DEFAULTS = {
 
         # FIXME: All view-related schemas should be moved somewhere else down
         # the road. Probably as soon as we get SDK implemented.
+        # FIXME: Read-only
         'data_groups': [
             'dns',
             'har',
@@ -52,11 +53,13 @@ DEFAULTS = {
             'whois'
         ],
 
+        # FIXME: Read-only
         'per_group_views': [
             'all',
             'summary'
         ],
 
+        # FIXME: Read-only
         'compound_views': [
             'all',
             'summary'
